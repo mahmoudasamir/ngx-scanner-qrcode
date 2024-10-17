@@ -1,12 +1,11 @@
 <div class="container">
-  <h1> ngx-scanner-qrcode </h1>
 
-  <!-- devices -->
   <div class="row">
     <div class="col-xs-12 col-md-6 col-lg-4 col-xl-3 my-1">
       <select #select1 (change)="action.playDevice(select1.value)" class="form-select form-select-md">
         <option [value]="null" selected>Select device</option>
-        <option *ngFor="let c of action.devices.value; let i = index" [value]="c.deviceId" [selected]="i == action.deviceIndexActive">{{c.label}}</option>
+        <option *ngFor="let c of action.devices.value; let i = index" [value]="c.deviceId"
+          [selected]="i == action.deviceIndexActive">{{c.label}}</option>
       </select>
     </div>
 
@@ -19,83 +18,97 @@
       </select>
     </div>
   </div>
-  
-  <!-- ngx-scanner-qrcode -->
+
   <ngx-scanner-qrcode #action="scanner" [config]="config" (event)="onEvent($event, action)"></ngx-scanner-qrcode>
   <br>
 
-  <!-- data  -->
-  <!-- <p class="data">{{ action.data | async }}</p> -->
-
-  <!-- loading -->
   <p *ngIf="action.isLoading">⌛ Loading...</p>
 
-  <!-- start/stop -->
-  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart" [disabled]="action.isLoading">
-    <img *ngIf="!action.isStart" (click)="handle(action, 'start')" src="assets/images/camera-on.svg" width="30px"/>
-    <img *ngIf="action.isStart" (click)="handle(action, 'stop')" src="assets/images/camera-off.svg" width="30px"/>
-  </button>
-  
-  <!-- play/pause -->
-  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart" [disabled]="!action.isStart" (click)="handle(action, action.isPause ? 'play' : 'pause')">
-    <img [src]="action.isPause ? 'assets/images/play.svg ': 'assets/images/pause.svg'" width="30px"/>
+  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart"
+    [disabled]="action.isLoading">
+    <img *ngIf="!action.isStart" (click)="handle(action, 'start')" src="assets/images/camera-on.svg" width="30px" />
+    <img *ngIf="action.isStart" (click)="handle(action, 'stop')" src="assets/images/camera-off.svg" width="30px" />
   </button>
 
-  <!-- isTorch -->
-  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart" [disabled]="!action.isStart" (click)="action.isTorch = !action.isTorch; handle(action, 'torcher')">
-    <img [src]="action.isTorch ? 'assets/images/flash-off.svg' : 'assets/images/flash-on.svg'" width="30px"/>
+  <button class="btn" id="btnplaypause" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart"
+    [disabled]="!action.isStart" (click)="handle(action, action.isPause ? 'play' : 'pause')">
+    <img [src]="action.isPause ? 'assets/images/play.svg ': 'assets/images/pause.svg'" width="30px" />
   </button>
 
-  <!-- download -->
-  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart" [disabled]="!action.isStart" (click)="onDowload(action)">
-    <img src="assets/images/capture.svg" width="30px"/>
+  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart"
+    [disabled]="!action.isStart" (click)="action.isTorch = !action.isTorch; handle(action, 'torcher')">
+    <img [src]="action.isTorch ? 'assets/images/flash-off.svg' : 'assets/images/flash-on.svg'" width="30px" />
+  </button>
+
+  <button class="btn" [class.btn-info]="!action.isStart" [class.btn-warning]="action.isStart"
+    [disabled]="!action.isStart" (click)="onDowload(action)">
+    <img src="assets/images/capture.svg" width="30px" />
   </button>
   <br>
 
-  <!-- For select files -->
-  <input #file type="file" (change)="onSelects(file.files)" [multiple]="'multiple'" [accept]="'.jpg, .png, .gif, .jpeg'" class="btn btn-success my-2"/>
-  <br>
-  <input #file2 type="file" (change)="onSelects2(file2.files)" [multiple]="'multiple'" [accept]="'.jpg, .png, .gif, .jpeg'" class="btn btn-success my-2"/>
-  <br>
 
-  <button (click)="onGetConstraints()" class="btn btn-success">Get</button>
-  <button (click)="applyConstraints()" class="btn btn-success">App</button>
-
-  <div class="d-flex justify-content-center my-2">
-    <div class="col-xs-12 col-md-6 col-lg-4 col-xl-2 m-1">
-      <select #select3 (change)="percentage = +select3.value" class="form-select form-select-md">
-        <option *ngFor="let item of [10,20,30,40,50,60,70,80,90,100]" [value]="item" [selected]="item == percentage">Scale {{item}}%</option>
-      </select>
-    </div>
-    <div class="col-xs-12 col-md-6 col-lg-4 col-xl-2 m-1">
-      <select #select4 (change)="quality = +select4.value" class="form-select form-select-md">
-        <option *ngFor="let item of [10,20,30,40,50,60,70,80,90,100]" [value]="item" [selected]="item == quality">Quality {{item}}%</option>
-      </select>
-    </div>
+  <div *ngIf="code" class="readbarcode " [ngClass]="{'openModal':  reading==true}">
+    Scanned Result: {{ code }}
   </div>
-
-  <div *ngFor="let item of qrCodeResult">
-    <ngx-scanner-qrcode #actionFile="scanner" [src]="item.url" [config]="config" (event)="onEvent($event)"></ngx-scanner-qrcode>
-    <!-- <p class="data">{{ actionFile.data | async }}</p> -->
-  </div>
- 
-  <div *ngFor="let item of qrCodeResult2">
-    <img [src]="item.url | safe: 'url'" alt="" style="max-width: 100%">
-    <!-- <p class="data">{{ item | json }}</p> -->
-  </div>
-
-  <ngx-scanner-qrcode
-    #actionFile="scanner"
-    (event)="onEvent($event)"
-    [src]="'https://raw.githubusercontent.com/id1945/ngx-scanner-qrcode/master/supported-barcode-types.png'"
-    [config]="config"> 
-  </ngx-scanner-qrcode>
-  <!-- <p class="data">{{ actionFile.data | async }}</p> -->
-
-  <!-- License -->
-  <p class="center"><a href="https://github.com/id1945/ngx-scanner-qrcode/blob/master/LICENSE">LGPL-2.1+ License</a></p>
-
-  <!-- Copyright -->
-  <p class="center">Author: DaiDH</p>
-  <p class="center">Copyright (C) 1991, 1999 Free Software Foundation, Inc.</p>
 </div>
+
+
+
+
+
+
+
+
+<!-- <header>
+  <select (change)="onDeviceSelectChange($event)">
+    <option value="" [selected]="!currentDevice">No Device Selected</option>
+    <option *ngFor="let device of availableDevices" [value]="device.deviceId" [selected]="currentDevice && device.deviceId === currentDevice.deviceId">{{ device.label }}</option>
+  </select>
+</header>
+
+<div *ngIf="!hasPermission">Permission to access the camera is required. Please allow camera access in your browser settings.</div>
+
+<zxing-scanner  #scanner start="true" [device]="currentDevice" (scanSuccess)="handleQrCodeResult($event)" [formats]="formats"></zxing-scanner>
+
+<div *ngIf="qrResultString" class="readbarcode " [ngClass]="{'openModal':  reading==true}">
+  Scanned Result: {{ qrResultString }}
+</div>
+-->
+<!-- <div>
+  <table style="border: 1px solid black; max-width: 600px;width: 100%; ">
+    <thead class="list-headtable">
+      <tr class="tr-list" style="border: 1px solid black;">
+        <th class="th-list " style="width: 40px;">#</th>
+        <th class="th-list ">BarCode</th>
+        <th class="th-list ">Quantity</th>
+      </tr>
+    </thead>
+    <tbody class="list-bodytable">
+      <tr class="tr-list"style="border: 1px solid black;"
+        *ngFor="let item of listOfBarcode ; let i = index ">
+        <td class="td-list-text"> {{ i + 1 }}</td>
+        <td class="td-list-text"> {{ item.barcode }}</td>
+        <td class="td-list-text"> {{ item.quantity }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div> -->
+<table class="table tablebarcode">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col"style="width: 65%;">BarCode</th>
+      <th scope="col"style="width: 30%;">Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of listOfBarcode ; let i = index ">
+      <th scope="row"> {{ i + 1 }}</th>
+      <td style="width: 65%;display: flex;flex-wrap: wrap;overflow: hidden;height: auto;"> {{ item.barcode }}</td>
+      <td style="width: 30%;"><input type="number"style="width: 100%;" [(ngModel)]="item.quantity"></td>
+    </tr>
+  </tbody>
+</table>
+<button (click)="onDownload()"
+  style="background: darkslateblue;color: white;border: 0;border-radius: 7px;height: 40px;margin: 10px;"
+  *ngIf="listOfBarcode.length > 0">Download File</button>
